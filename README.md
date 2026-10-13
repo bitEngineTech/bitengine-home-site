@@ -11,7 +11,7 @@ Landing page for bitEngine Hub. Plain HTML, no build step; served by GitHub Page
 
 ## Before going live
 
-1. In `index.html`, replace `YOUR_BUTTONDOWN_USERNAME` with your Buttondown username.
+1. ~~Buttondown username~~ (done: `bitengine`)
 2. ~~Discussion thread link~~ (done)
 
 ## Deploy
