@@ -12,7 +12,7 @@ Landing page for bitEngine Hub. Plain HTML, no build step; served by GitHub Page
 ## Before going live
 
 1. In `index.html`, replace `YOUR_BUTTONDOWN_USERNAME` with your Buttondown username.
-2. Replace the "Discussion thread" link (`https://community.home-assistant.io/`) with the URL of your forum post once it is approved.
+2. ~~Discussion thread link~~ (done)
 
 ## Deploy
 

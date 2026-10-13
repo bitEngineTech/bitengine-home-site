@@ -109,6 +109,8 @@
   table.spec { width: 100%; border-collapse: collapse; font-size: 1rem; }
   table.spec th, table.spec td { text-align: left; vertical-align: top; padding: 11px 0; border-bottom: 1px solid var(--rule); }
   table.spec th { width: 34%; font-weight: 600; padding-right: 18px; }
+  .diffs { margin: 0; padding-left: 1.2em; max-width: var(--measure); }
+  .diffs li { margin: 0 0 14px; }
   .tradeoffs { margin: 0; padding: 0; list-style: none; }
   .tradeoffs li { margin: 0 0 18px; max-width: 60ch; }
   .tradeoffs strong { display: block; }
@@ -183,7 +185,7 @@
   <section class="band" aria-labelledby="band-h">
     <div class="wrap">
       <h2 id="band-h">Two networks transmitting at once, on their own channels</h2>
-      <p>Most network coordinators have one 802.15.4 radio, so you choose Zigbee or Thread, or run multiprotocol firmware that time-shares it. The Hub has two radios and two antennas, so each network keeps its own channel all the time.</p>
+      <p>A single-radio coordinator makes you pick Zigbee or Thread, or time-share one radio with multiprotocol firmware. The Hub has two radios and two antennas, so each network keeps its own channel all the time.</p>
       <div class="strip">
         <div class="strip-scroll"><svg viewBox="0 0 960 170" role="img" aria-labelledby="strip-t strip-d">
           <title id="strip-t">802.15.4 channels 11 to 26 in the 2.4 GHz band</title>
@@ -237,6 +239,19 @@
     </div>
   </section>
 
+  <section class="block" aria-labelledby="diff-h">
+    <div class="wrap">
+      <h2 id="diff-h">How it compares</h2>
+      <p class="lead">Dual-radio network coordinators already exist, such as SMLIGHT's MR series. The Hub makes a few different choices:</p>
+      <ul class="diffs">
+        <li><strong>Thread is native on the second chip.</strong> The ESP32-C5 has its own 802.15.4 radio, so Thread doesn't need a separate radio co-processor.</li>
+        <li><strong>OTBR is the only Thread mode.</strong> The border router always runs on the device and Home Assistant talks to it over the REST API. There's no mode to switch and no add-on to install.</li>
+        <li><strong>Wi-Fi uplink is 5 GHz only.</strong> 2.4 GHz Wi-Fi stays off, leaving that band to Zigbee and Thread.</li>
+        <li><strong>Open firmware and schematics.</strong> Firmware under Apache-2.0, schematics as PDF under CERN-OHL-P v2.</li>
+      </ul>
+    </div>
+  </section>
+
   <section class="block" aria-labelledby="spec-h">
     <div class="wrap two">
       <div>
@@ -272,8 +287,8 @@
       </div>
       <ul class="status">
         <li><i class="dot done" aria-label="Done"></i><div><strong>Hardware and firmware working on a home network</strong><p>Running ZHA and Matter-over-Thread devices continuously.</p></div></li>
-        <li><i class="dot now" aria-label="In progress"></i><div><strong>Wider testing</strong><p>Zigbee2MQTT, current Home Assistant releases and larger device counts.</p></div></li>
-        <li><i class="dot now" aria-label="In progress"></i><div><strong>Open-source release</strong><p>Hub firmware under Apache-2.0, plus build configuration for the MG24 image. Published before any units reach testers.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Long-term stability testing</strong><p>Zigbee2MQTT, current Home Assistant releases, larger device counts and longer uptime. The bar is a coordinator you can forget about.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Open-source release</strong><p>Hub firmware under Apache-2.0 with build configuration for the MG24 image, and schematics (PDF) under CERN-OHL-P v2. Published before any units reach testers.</p></div></li>
         <li><i class="dot later" aria-label="Planned"></i><div><strong>FCC and CE certification</strong><p>On the production board revision.</p></div></li>
         <li><i class="dot later" aria-label="Planned"></i><div><strong>Small tester run</strong><p>A limited number of units for homes with larger Zigbee or mixed Thread networks.</p></div></li>
       </ul>
@@ -303,7 +318,7 @@
 <footer>
   <div class="wrap">
     <p>bitEngine Hub is in development and has not been authorized as required by the rules of the Federal Communications Commission. It is not, and may not be, offered for sale or lease, or sold or leased, until authorization is obtained.</p>
-    <p><a href="https://community.home-assistant.io/">Discussion thread</a><br><a href="https://bitengine.tech">bitengine.tech</a></p>
+    <p><a href="https://community.home-assistant.io/t/zigbee-coordinator-thread-border-router-with-otbr-on-the-device-no-add-on-needed-on-one-poe-box-firmware-schematics-to-be-published-looking-for-feedback/1028644">Discussion thread</a><br><a href="https://bitengine.tech">bitengine.tech</a></p>
   </div>
 </footer>
 
