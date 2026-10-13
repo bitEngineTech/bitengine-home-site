@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bitEngine Hub — Zigbee and Thread on two radios, in one PoE box</title>
+<meta name="description" content="bitEngine Hub runs a Zigbee coordinator and a Thread border router at the same time, on two independent radios, powered and connected over a single Ethernet cable. Local only, built for Home Assistant.">
+<meta property="og:title" content="bitEngine Hub">
+<meta property="og:description" content="Zigbee coordinator + Thread border router, running simultaneously on two radios. PoE, local only.">
+<meta property="og:image" content="https://home.bitengine.tech/images/hub-front.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --alu: #e9ecee;        /* anodized aluminium page */
+    --panel: #f7f8f9;
+    --ink: #1c2226;
+    --muted: #59636a;
+    --rule: #c9ced2;
+    --zigbee: #c27c12;     /* amber: Zigbee radio */
+    --thread: #17788a;     /* teal: Thread radio */
+    --led: #2fbf57;        /* status LED green */
+    --idle: #9aa3a9;
+    --measure: 66ch;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--alu);
+    color: var(--ink);
+    font-family: "Archivo", system-ui, sans-serif;
+    font-variation-settings: "wdth" 100;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  a { color: var(--thread); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 3px solid var(--zigbee); outline-offset: 3px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header.top { padding: 22px 0; }
+  header.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .brand { font-weight: 700; font-variation-settings: "wdth" 118; letter-spacing: .01em; text-decoration: none; color: var(--ink); }
+  .brand span { font-weight: 400; color: var(--muted); }
+  .leds { display: flex; gap: 7px; }
+  .leds i { width: 8px; height: 8px; border-radius: 50%; background: var(--led); box-shadow: 0 0 6px rgba(47,191,87,.7); }
+
+  /* Hero */
+  .hero { padding: 32px 0 8px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: end; }
+  h1 {
+    font-variation-settings: "wdth" 116;
+    font-weight: 750;
+    font-size: clamp(2.3rem, 5.4vw, 4.1rem);
+    line-height: 1.02;
+    letter-spacing: -.015em;
+    margin: 0 0 22px;
+  }
+  .lede { font-size: 1.2rem; max-width: 34ch; margin: 0 0 28px; color: #2b3338; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn {
+    display: inline-block; background: var(--ink); color: #fff; text-decoration: none;
+    font-weight: 600; padding: 13px 22px; border-radius: 4px; border: 0; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .btn:hover { background: #000; }
+  .cta .note { color: var(--muted); font-size: .95rem; }
+  .photo { margin: 0; }
+  .photo img { display: block; width: 100%; height: auto; border-radius: 6px; aspect-ratio: 1400 / 1727; object-fit: cover; }
+  .photo figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+
+  /* Channel strip: the signature element */
+  .band { padding: 56px 0 24px; }
+  .band h2 { margin-bottom: 8px; }
+  .band p { margin: 0 0 22px; max-width: var(--measure); color: #2b3338; }
+  .strip { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 22px 14px; }
+  .strip svg { display: block; width: 100%; height: auto; }
+  .strip-scroll { overflow-x: auto; }
+  .strip .legend { display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: .92rem; margin-top: 10px; color: var(--muted); }
+  .strip .legend b { color: var(--ink); font-weight: 600; }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 7px; vertical-align: -1px; }
+  .tx { transform-origin: center bottom; animation: pulse 2.4s ease-in-out infinite; }
+  .tx.th { animation-delay: .9s; }
+  @keyframes pulse { 0%,100% { opacity: .55; } 45% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .tx { animation: none; opacity: 1; } }
+
+  /* Sections */
+  section.block { padding: 56px 0; border-top: 1px solid var(--rule); }
+  h2 {
+    font-variation-settings: "wdth" 110;
+    font-weight: 700; font-size: clamp(1.55rem, 2.6vw, 2.05rem);
+    line-height: 1.15; margin: 0 0 18px; letter-spacing: -.005em;
+  }
+  h3 { font-size: 1.12rem; margin: 0 0 6px; font-weight: 650; }
+  .lead { max-width: var(--measure); margin: 0 0 28px; color: #2b3338; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .radio { padding-left: 16px; border-left: 4px solid var(--zigbee); }
+  .radio.th { border-left-color: var(--thread); }
+  .radio p { margin: 0 0 10px; }
+  code, pre { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: .9em; }
+  pre { background: #1f2529; color: #e6eaec; padding: 12px 14px; border-radius: 4px; overflow-x: auto; margin: 8px 0 0; line-height: 1.5; }
+  .arch { margin: 34px 0 0; }
+  .arch img { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--rule); border-radius: 6px; }
+  .arch figcaption { font-size: .9rem; color: var(--muted); margin-top: 8px; max-width: var(--measure); }
+
+  table.spec { width: 100%; border-collapse: collapse; font-size: 1rem; }
+  table.spec th, table.spec td { text-align: left; vertical-align: top; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+  table.spec th { width: 34%; font-weight: 600; padding-right: 18px; }
+  .tradeoffs { margin: 0; padding: 0; list-style: none; }
+  .tradeoffs li { margin: 0 0 18px; max-width: 60ch; }
+  .tradeoffs strong { display: block; }
+
+  /* Status: LED dots encode state */
+  .status { list-style: none; margin: 0; padding: 0; max-width: 760px; }
+  .status li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .dot { display: inline-block; }
+  .status .dot { width: 11px; height: 11px; border-radius: 50%; margin-top: 8px; }
+  .dot.done { background: var(--led); box-shadow: 0 0 6px rgba(47,191,87,.6); }
+  .dot.now { background: var(--zigbee); box-shadow: 0 0 6px rgba(194,124,18,.55); }
+  .dot.later { background: transparent; border: 2px solid var(--idle); }
+  .status p { margin: 2px 0 0; color: var(--muted); font-size: .97rem; }
+  .key { display: flex; gap: 22px; flex-wrap: wrap; font-size: .9rem; color: var(--muted); margin: 0 0 8px; }
+  .key span { display: inline-flex; align-items: center; gap: 8px; }
+  .key .dot { margin: 0; width: 11px; height: 11px; border-radius: 50%; }
+
+  /* Subscribe */
+  .subscribe { background: var(--ink); color: #eef1f2; border-radius: 6px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+  .subscribe h2 { color: #fff; }
+  .subscribe p { margin: 0; color: #c3cace; max-width: 44ch; }
+  .subscribe form { display: flex; flex-wrap: wrap; gap: 10px; }
+  .subscribe label { width: 100%; font-size: .95rem; color: #c3cace; }
+  .subscribe input[type=email] {
+    flex: 1 1 220px; font: inherit; padding: 12px 14px; border-radius: 4px; border: 1px solid #4a545a; background: #11171a; color: #fff;
+  }
+  .subscribe .btn { background: var(--led); color: #0f1a12; }
+  .subscribe .btn:hover { background: #3fd468; }
+  .subscribe small { width: 100%; color: #8e989e; font-size: .85rem; }
+
+  footer { padding: 40px 0 56px; color: var(--muted); font-size: .92rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer p { margin: 0; max-width: 60ch; }
+
+  @media (max-width: 860px) {
+    .hero .wrap, .two, .subscribe { grid-template-columns: 1fr; }
+    .hero .wrap { gap: 28px; }
+    .photo { max-width: 460px; }
+    .subscribe { padding: 28px 22px; }
+    table.spec th { width: 42%; }
+    .strip svg { min-width: 620px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://bitengine.tech">bitEngine <span>Hub</span></a>
+    <div class="leds" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Zigbee and Thread, both on, in one PoE box.</h1>
+        <p class="lede">bitEngine Hub puts a Zigbee coordinator and a Thread border router on two separate radios, running at the same time. One Ethernet cable for power and data. No cloud, no app.</p>
+        <div class="cta">
+          <a class="btn" href="#updates">Get build updates</a>
+          <span class="note">In development. Not for sale yet.</span>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="images/hub-front.jpg" alt="bitEngine Hub prototype with two antennas, four green status LEDs, an Ethernet port and USB-C power" width="1400" height="1727">
+        <figcaption>Prototype with 3D-printed enclosure. Production units will use an aluminium extrusion case.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="band-h">
+    <div class="wrap">
+      <h2 id="band-h">Two networks transmitting at once, on their own channels</h2>
+      <p>Most network coordinators have one 802.15.4 radio, so you choose Zigbee or Thread, or run multiprotocol firmware that time-shares it. The Hub has two radios and two antennas, so each network keeps its own channel all the time.</p>
+      <div class="strip">
+        <div class="strip-scroll"><svg viewBox="0 0 960 170" role="img" aria-labelledby="strip-t strip-d">
+          <title id="strip-t">802.15.4 channels 11 to 26 in the 2.4 GHz band</title>
+          <desc id="strip-d">Zigbee is shown transmitting on channel 15 and Thread on channel 25 at the same time, each from its own radio.</desc>
+          <!-- baseline + ticks: 16 channels, x = 40 + i*58 -->
+          <line x1="20" y1="130" x2="940" y2="130" stroke="#9aa3a9" stroke-width="1.5"/>
+          <g fill="#59636a" font-family="Archivo, sans-serif" font-size="13" text-anchor="middle">
+            <g id="ticks"></g>
+          </g>
+          <!-- Zigbee ch 15 => i=4 => x=272 ; Thread ch 25 => i=14 => x=852 -->
+          <g class="tx">
+            <path d="M246 130 Q272 34 298 130 Z" fill="#c27c12" fill-opacity=".9"/>
+          </g>
+          <g class="tx th">
+            <path d="M826 130 Q852 34 878 130 Z" fill="#17788a" fill-opacity=".9"/>
+          </g>
+          <g font-family="Archivo, sans-serif" font-size="14" font-weight="600" text-anchor="middle">
+            <text x="272" y="64" fill="#c27c12">Zigbee</text>
+            <text x="852" y="64" fill="#17788a">Thread</text>
+          </g>
+        </svg></div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--zigbee)"></i><b>EFR32MG24</b> Zigbee coordinator, antenna 1</span>
+          <span><i class="sw" style="background:var(--thread)"></i><b>ESP32-C5</b> Thread border router, antenna 2</span>
+          <span>Channels shown are an example; each network picks its own.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="ha-h">
+    <div class="wrap">
+      <h2 id="ha-h">How it shows up in Home Assistant</h2>
+      <p class="lead">It behaves like two standard devices in one enclosure. Nothing proprietary to install.</p>
+      <div class="two">
+        <div class="radio">
+          <h3>Zigbee: a network coordinator</h3>
+          <p>Add it to ZHA as an EZSP network adapter. Zigbee2MQTT with the <code>ember</code> driver uses the same port; that pairing is being tested next.</p>
+          <pre>socket://&lt;hub-address&gt;:6638</pre>
+        </div>
+        <div class="radio th">
+          <h3>Thread: a border router on the device</h3>
+          <p>OpenThread Border Router runs on the Hub itself. Add it with Home Assistant's Open Thread Border Router integration; the OTBR add-on isn't needed.</p>
+          <pre>http://&lt;hub-address&gt;:8081</pre>
+        </div>
+      </div>
+      <figure class="arch">
+        <a href="images/architecture.png"><img src="images/architecture.png" alt="Block diagram: the EFR32MG24 Zigbee radio connects over UART to the ESP32-C5, which contains the CPU, the Thread radio and the Wi-Fi radio. The C5 drives an Ethernet PHY with PoE, which connects over the LAN to Home Assistant." loading="lazy"></a>
+        <figcaption>What crosses your network is EZSP over TCP for Zigbee, and plain IPv6 plus the OTBR REST API for Thread. The Thread mesh keeps running if your Home Assistant host reboots. Select the diagram to view it full size.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="spec-h">
+    <div class="wrap two">
+      <div>
+        <h2 id="spec-h">Hardware</h2>
+        <table class="spec">
+          <tr><th scope="row">Zigbee</th><td>EFR32MG24, EmberZNet 8.2 NCP</td></tr>
+          <tr><th scope="row">Thread and Wi-Fi</th><td>ESP32-C5: 802.15.4 and dual-band Wi-Fi 6</td></tr>
+          <tr><th scope="row">Uplink</th><td>10/100 Ethernet, or 5 GHz Wi-Fi</td></tr>
+          <tr><th scope="row">Power</th><td>802.3af PoE or USB-C 5 V</td></tr>
+          <tr><th scope="row">Antennas</th><td>Two external SMA, one per radio</td></tr>
+          <tr><th scope="row">Status lights</th><td>Four RGB LEDs: system, Zigbee, Thread, network</td></tr>
+          <tr><th scope="row">Enclosure</th><td>Aluminium extrusion (production)</td></tr>
+        </table>
+      </div>
+      <div>
+        <h2>Trade-offs to know</h2>
+        <ul class="tradeoffs">
+          <li><strong>Ethernet is the recommended uplink.</strong> 2.4 GHz Wi-Fi is turned off to keep that band clear for Zigbee and Thread. The 5 GHz Wi-Fi uplink shares the C5's radio with Thread, so a wire is the more reliable choice.</li>
+          <li><strong>Both networks start from the same spot.</strong> If your home needs the Zigbee coordinator and the Thread border router in different rooms, two separate devices are the better fit.</li>
+          <li><strong>Not certified yet.</strong> FCC and CE testing is being planned for the production hardware.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="status-h">
+    <div class="wrap">
+      <h2 id="status-h">Where it stands</h2>
+      <div class="key" aria-hidden="true">
+        <span><i class="dot done"></i>Done</span>
+        <span><i class="dot now"></i>In progress</span>
+        <span><i class="dot later"></i>Planned</span>
+      </div>
+      <ul class="status">
+        <li><i class="dot done" aria-label="Done"></i><div><strong>Hardware and firmware working on a home network</strong><p>Running ZHA and Matter-over-Thread devices continuously.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Wider testing</strong><p>Zigbee2MQTT, current Home Assistant releases and larger device counts.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Open-source release</strong><p>Hub firmware under Apache-2.0, plus build configuration for the MG24 image. Published before any units reach testers.</p></div></li>
+        <li><i class="dot later" aria-label="Planned"></i><div><strong>FCC and CE certification</strong><p>On the production board revision.</p></div></li>
+        <li><i class="dot later" aria-label="Planned"></i><div><strong>Small tester run</strong><p>A limited number of units for homes with larger Zigbee or mixed Thread networks.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="updates" aria-labelledby="sub-h">
+    <div class="wrap">
+      <div class="subscribe">
+        <div>
+          <h2 id="sub-h">Follow the build</h2>
+          <p>Test results, the open-source release and news about tester units. A few emails at most; unsubscribe any time.</p>
+        </div>
+        <!-- TODO: replace YOUR_BUTTONDOWN_USERNAME with your Buttondown username -->
+        <form action="https://buttondown.com/api/emails/embed-subscribe/YOUR_BUTTONDOWN_USERNAME" method="post" target="_blank">
+          <label for="bd-email">Email address</label>
+          <input type="email" name="email" id="bd-email" autocomplete="email" required placeholder="you@example.com">
+          <input type="hidden" name="tag" value="hub">
+          <button class="btn" type="submit">Subscribe</button>
+          <small>Used only for bitEngine Hub updates.</small>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>bitEngine Hub is in development and has not been authorized as required by the rules of the Federal Communications Commission. It is not, and may not be, offered for sale or lease, or sold or leased, until authorization is obtained.</p>
+    <p><a href="https://community.home-assistant.io/">Discussion thread</a><br><a href="https://bitengine.tech">bitengine.tech</a></p>
+  </div>
+</footer>
+
+<script>
+  // Channel ticks 11–26
+  (function () {
+    var g = document.getElementById('ticks'), ns = 'http://www.w3.org/2000/svg';
+    for (var i = 0; i < 16; i++) {
+      var x = 40 + i * 58, ch = 11 + i;
+      var l = document.createElementNS(ns, 'line');
+      l.setAttribute('x1', x); l.setAttribute('x2', x); l.setAttribute('y1', 130); l.setAttribute('y2', 137);
+      l.setAttribute('stroke', '#9aa3a9');
+      var t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', x); t.setAttribute('y', 156); t.textContent = ch;
+      g.appendChild(l); g.appendChild(t);
+    }
+  })();
+</script>
+</body>
+</html>
