@@ -61,6 +61,8 @@
     margin: 0 0 22px;
   }
   .lede { font-size: 1.2rem; max-width: 34ch; margin: 0 0 28px; color: #2b3338; }
+  .openline { margin: -14px 0 28px; font-weight: 600; }
+  .openline a { color: var(--thread); }
   .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
   .btn {
     display: inline-block; background: var(--ink); color: #fff; text-decoration: none;
@@ -111,6 +113,11 @@
   table.spec th { width: 34%; font-weight: 600; padding-right: 18px; }
   .diffs { margin: 0; padding-left: 1.2em; max-width: var(--measure); }
   .diffs li { margin: 0 0 14px; }
+  table.spec.open th[scope=col] { font-size: .9rem; color: var(--muted); font-weight: 600; width: auto; }
+  table.spec.open tbody th { width: 28%; }
+  table.spec.open td:last-child, table.spec.open thead th:last-child { white-space: nowrap; padding-left: 18px; }
+  table.spec.open td:last-child { font-weight: 600; }
+  .fine { font-size: .92rem; color: var(--muted); margin: 14px 0 0; max-width: var(--measure); }
   .tradeoffs { margin: 0; padding: 0; list-style: none; }
   .tradeoffs li { margin: 0 0 18px; max-width: 60ch; }
   .tradeoffs strong { display: block; }
@@ -170,6 +177,7 @@
       <div>
         <h1>Zigbee and Thread, both on, in one PoE box.</h1>
         <p class="lede">bitEngine Hub puts a Zigbee coordinator and a Thread border router on two separate radios, running at the same time. One Ethernet cable for power and data. No cloud, no app.</p>
+        <p class="openline"><a href="#open-h">Open firmware (Apache-2.0) and open schematics (CERN-OHL-P v2).</a></p>
         <div class="cta">
           <a class="btn" href="#updates">Get build updates</a>
           <span class="note">In development. Not for sale yet.</span>
@@ -247,8 +255,24 @@
         <li><strong>Thread is native on the second chip.</strong> The ESP32-C5 has its own 802.15.4 radio, so Thread doesn't need a separate radio co-processor.</li>
         <li><strong>OTBR is the only Thread mode.</strong> The border router always runs on the device and Home Assistant talks to it over the REST API. There's no mode to switch and no add-on to install.</li>
         <li><strong>Wi-Fi uplink is 5 GHz only.</strong> 2.4 GHz Wi-Fi stays off, leaving that band to Zigbee and Thread.</li>
-        <li><strong>Open firmware and schematics.</strong> Firmware under Apache-2.0, schematics as PDF under CERN-OHL-P v2.</li>
+        <li><strong>Open firmware and schematics.</strong> See <a href="#open-h">what will be published</a> below.</li>
       </ul>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="open-h">
+    <div class="wrap">
+      <h2 id="open-h">What you'll be able to read, build and modify</h2>
+      <p class="lead">A coordinator sits at the centre of your home network, so you should be able to see exactly what it runs and how it's wired. Everything below will be published before any units reach testers.</p>
+      <table class="spec open">
+        <thead><tr><th scope="col">Part</th><th scope="col">What's published</th><th scope="col">License</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Hub firmware (ESP32-C5)</th><td>Full source: TCP bridge, OpenThread border router integration, web UI</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Zigbee firmware (EFR32MG24)</th><td>Project configuration, our extensions and build scripts. The build pulls the EmberZNet SDK from Silicon Labs, which can't be redistributed.</td><td>Apache-2.0</td></tr>
+          <tr><th scope="row">Hardware</th><td>Schematics as PDF</td><td>CERN-OHL-P v2</td></tr>
+        </tbody>
+      </table>
+      <p class="fine">Official firmware images will be signed so the radios stay within their certified limits.</p>
     </div>
   </section>
 
