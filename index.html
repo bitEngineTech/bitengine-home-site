@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>bitEngine Hub — Zigbee and Thread on two radios, in one PoE box</title>
-<meta name="description" content="bitEngine Hub runs a Zigbee coordinator and a Thread border router at the same time, on two independent radios, powered and connected over a single Ethernet cable. Local only, built for Home Assistant.">
+<meta name="description" content="bitEngine Hub runs a Zigbee coordinator and a Thread border router at the same time, on two independent radios, powered and connected over a single Ethernet cable. Runs locally with Home Assistant, and an experimental build talks to Muse directly.">
 <meta property="og:title" content="bitEngine Hub">
-<meta property="og:description" content="Zigbee coordinator + Thread border router, running simultaneously on two radios. PoE, local only.">
+<meta property="og:description" content="Zigbee coordinator + Thread border router, running simultaneously on two radios. PoE, local with Home Assistant, plus an experimental direct link to Muse.">
 <meta property="og:image" content="https://home.bitengine.tech/images/hub-front.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,7 @@
     --thread: #17788a;     /* teal: Thread radio */
     --led: #2fbf57;        /* status LED green */
     --idle: #9aa3a9;
+    --muse: #5b3fa8;       /* purple: Muse, matches the diagram */
     --measure: 66ch;
   }
   * { box-sizing: border-box; }
@@ -148,6 +149,21 @@
   .subscribe .btn:hover { background: #3fd468; }
   .subscribe small { width: 100%; color: #8e989e; font-size: .85rem; }
 
+  /* Muse (experimental build) */
+  .tag { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muse); border: 1.5px solid var(--muse); border-radius: 3px; padding: 2px 8px; margin: 0 0 14px; }
+  .muse { display: grid; grid-template-columns: minmax(240px, 330px) 1fr; gap: 40px; align-items: start; }
+  .muse video { display: block; width: 100%; height: auto; aspect-ratio: 720 / 1280; background: #11171a; border-radius: 6px; }
+  .muse figure { margin: 0; }
+  .muse figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  .muse h3 { margin-top: 26px; }
+  .muse h3:first-child { margin-top: 0; }
+  .muse ul { margin: 6px 0 0; padding-left: 1.2em; max-width: var(--measure); }
+  .muse ul li { margin: 0 0 6px; }
+  .muse table.spec { margin-top: 8px; }
+  .muse table.spec th { width: 52%; font-weight: 500; }
+  .muse table.spec td { font-weight: 600; }
+  .arch.muse-arch { margin-top: 40px; }
+
   footer { padding: 40px 0 56px; color: var(--muted); font-size: .92rem; }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
   footer p { margin: 0; max-width: 60ch; }
@@ -156,6 +172,8 @@
     .hero .wrap, .two, .subscribe { grid-template-columns: 1fr; }
     .hero .wrap { gap: 28px; }
     .photo { max-width: 460px; }
+    .muse { grid-template-columns: 1fr; gap: 28px; }
+    .muse figure { max-width: 330px; }
     .subscribe { padding: 28px 22px; }
     table.spec th { width: 42%; }
     .strip svg { min-width: 620px; }
@@ -176,7 +194,7 @@
     <div class="wrap">
       <div>
         <h1>Zigbee and Thread, both on, in one PoE box.</h1>
-        <p class="lede">bitEngine Hub puts a Zigbee coordinator and a Thread border router on two separate radios, running at the same time. One Ethernet cable for power and data. No cloud, no app.</p>
+        <p class="lede">bitEngine Hub puts a Zigbee coordinator and a Thread border router on two separate radios, running at the same time. One Ethernet cable for power and data. Runs locally, no cloud required.</p>
         <p class="openline"><a href="#open-h">Open firmware (Apache-2.0) and open schematics (CERN-OHL-P v2).</a></p>
         <div class="cta">
           <a class="btn" href="#updates">Get build updates</a>
@@ -247,6 +265,54 @@
     </div>
   </section>
 
+  <section class="block" id="muse" aria-labelledby="muse-h">
+    <div class="wrap">
+      <span class="tag">Experimental</span>
+      <h2 id="muse-h">Or skip Home Assistant and talk to it through Muse</h2>
+      <p class="lead">Home Assistant is the main way to use the Hub. On a separate, experimental firmware build, the Hub connects straight to Muse, Meta's AI agent, using the Muse Gadget SDK. You ask Muse in plain language to control your devices, and motion and door events show up in your Muse chat as they happen. There's no Home Assistant and no bitEngine cloud in between.</p>
+      <div class="muse">
+        <figure>
+          <video controls playsinline preload="none" poster="images/muse-demo-poster.jpg" width="720" height="1280" aria-describedby="muse-video-cap">
+            <source src="images/muse-demo.mp4" type="video/mp4">
+            <a href="images/muse-demo.mp4">Download the 1-minute demo video (MP4)</a>
+          </video>
+          <figcaption id="muse-video-cap">One-minute demo: "turn on the light" switches a Zigbee bulb, then opening a door sensor and walking past a motion sensor each show up in Muse.</figcaption>
+        </figure>
+        <div>
+          <h3>What Muse can do</h3>
+          <ul>
+            <li>List devices, read their state, switch them on and off, and dim lights</li>
+            <li>Rename devices and assign rooms</li>
+            <li>Open the Zigbee join window and commission a Matter device</li>
+            <li>Receive motion and door events from the devices you opt in, as they happen</li>
+          </ul>
+          <h3>Measured on one prototype board</h3>
+          <table class="spec">
+            <tr><th scope="row">Sensor report at the Hub → accepted by Muse's server</th><td>median 0.24 s, worst 1.1 s (25 events overnight, none lost)</td></tr>
+            <tr><th scope="row">Matter plug command → plug confirms</th><td>about 90 ms</td></tr>
+            <tr><th scope="row">Continuous run</th><td>21.5 h, no reboot, no heap growth</td></tr>
+            <tr><th scope="row">Server-side connection drops</th><td>about once an hour; reconnected in 3–21 s each time</td></tr>
+          </table>
+          <h3>Devices on it now</h3>
+          <ul>
+            <li>Zigbee: Sengled bulb, Third Reality motion sensor, Aqara temperature and humidity sensor</li>
+            <li>Matter over Thread: Aqara P2 door sensor, Eve Energy plug</li>
+          </ul>
+          <h3>Know before you try it</h3>
+          <ul>
+            <li>Muse is a cloud service, so in this mode device events go to Muse's servers. The Home Assistant mode stays local.</li>
+            <li>This build is Ethernet only. Wi-Fi is left out to free memory for TLS, Thread, Matter and Zigbee.</li>
+            <li>It's an unofficial integration, not affiliated with or endorsed by Meta.</li>
+          </ul>
+        </div>
+      </div>
+      <figure class="arch muse-arch">
+        <a href="images/muse-architecture.png"><img src="images/muse-architecture.png" alt="Diagram: Zigbee devices (Sengled bulb, Third Reality motion sensor, Aqara temperature and humidity sensor) connect to the EFR32MG24 radio, and Thread and Matter devices (Aqara P2 door sensor, Eve Energy plug) connect to the ESP32-C5. The ESP32-C5 runs the Zigbee host, Thread border router, Matter controller and Muse link. The Hub sends events to Muse in the cloud and receives tool calls to list, control and pair devices; Muse talks to the Muse app on your phone." loading="lazy" width="1600" height="900"></a>
+        <figcaption>The Muse build: events go up to Muse, tool calls come back down. Select the diagram to view it full size.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <section class="block" aria-labelledby="diff-h">
     <div class="wrap">
       <h2 id="diff-h">How it compares</h2>
@@ -313,6 +379,7 @@
       <ul class="status">
         <li><i class="dot done" aria-label="Done"></i><div><strong>Hardware and firmware working on a home network</strong><p>Running ZHA and Matter-over-Thread devices continuously.</p></div></li>
         <li><i class="dot now" aria-label="In progress"></i><div><strong>Long-term stability testing</strong><p>Zigbee2MQTT, current Home Assistant releases, larger device counts and longer uptime. The bar is a coordinator you can forget about.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Direct link to Muse (experimental)</strong><p>Working on one prototype board with Zigbee and Matter-over-Thread devices. See <a href="#muse">the Muse section</a>.</p></div></li>
         <li><i class="dot now" aria-label="In progress"></i><div><strong>Open-source release</strong><p>Hub firmware under Apache-2.0 with build configuration for the MG24 image, and schematics (PDF) under CERN-OHL-P v2. Published before any units reach testers.</p></div></li>
         <li><i class="dot later" aria-label="Planned"></i><div><strong>FCC and CE certification</strong><p>On the production board revision.</p></div></li>
         <li><i class="dot later" aria-label="Planned"></i><div><strong>Small tester run</strong><p>A limited number of units for homes with larger Zigbee or mixed Thread networks.</p></div></li>
