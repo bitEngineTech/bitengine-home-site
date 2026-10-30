@@ -249,7 +249,7 @@
       <div class="two">
         <div class="radio">
           <h3>Zigbee: a network coordinator</h3>
-          <p>Add it to ZHA as an EZSP network adapter. Zigbee2MQTT with the <code>ember</code> driver uses the same port; that pairing is being tested next.</p>
+          <p>Add it to ZHA as an EZSP network adapter. Zigbee2MQTT with the <code>ember</code> driver uses the same port, tested with Zigbee2MQTT 2.14.2.</p>
           <pre>socket://&lt;hub-address&gt;:6638</pre>
         </div>
         <div class="radio th">
@@ -378,7 +378,8 @@
       </div>
       <ul class="status">
         <li><i class="dot done" aria-label="Done"></i><div><strong>Hardware and firmware working on a home network</strong><p>Running ZHA and Matter-over-Thread devices continuously.</p></div></li>
-        <li><i class="dot now" aria-label="In progress"></i><div><strong>Long-term stability testing</strong><p>Zigbee2MQTT, current Home Assistant releases, larger device counts and longer uptime. The bar is a coordinator you can forget about.</p></div></li>
+        <li><i class="dot done" aria-label="Done"></i><div><strong>Zigbee2MQTT (ember) tested</strong><p>Pairing, reporting and control on Zigbee2MQTT 2.14.2, picking up the existing ZHA network without forming a new one.</p></div></li>
+        <li><i class="dot now" aria-label="In progress"></i><div><strong>Long-term stability testing</strong><p>Current Home Assistant releases, migration from other coordinators, larger device counts and longer uptime. The bar is a coordinator you can forget about.</p></div></li>
         <li><i class="dot now" aria-label="In progress"></i><div><strong>Direct link to Muse (experimental)</strong><p>Working on one prototype board with Zigbee and Matter-over-Thread devices. See <a href="#muse">the Muse section</a>.</p></div></li>
         <li><i class="dot now" aria-label="In progress"></i><div><strong>Open-source release</strong><p>Hub firmware under Apache-2.0 with build configuration for the MG24 image, and schematics (PDF) under CERN-OHL-P v2. Published before any units reach testers.</p></div></li>
         <li><i class="dot later" aria-label="Planned"></i><div><strong>FCC and CE certification</strong><p>On the production board revision.</p></div></li>
