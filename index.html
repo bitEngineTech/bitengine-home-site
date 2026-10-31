@@ -163,6 +163,7 @@
   .muse table.spec th { width: 52%; font-weight: 500; }
   .muse table.spec td { font-weight: 600; }
   .arch.muse-arch { margin-top: 40px; }
+  .muse.watch { margin-top: 34px; }
 
   footer { padding: 40px 0 56px; color: var(--muted); font-size: .92rem; }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
@@ -258,6 +259,27 @@
           <pre>http://&lt;hub-address&gt;:8081</pre>
         </div>
       </div>
+      <div class="muse watch">
+        <figure>
+          <video controls playsinline muted preload="none" poster="images/ha-z2m-demo-poster.jpg" width="720" height="1280" aria-describedby="ha-video-cap">
+            <source src="images/ha-z2m-demo.mp4" type="video/mp4">
+            <a href="images/ha-z2m-demo.mp4">Download the demo video (MP4)</a>
+          </video>
+          <figcaption id="ha-video-cap">47-second cut, real time: Home Assistant first, then the same Hub with Zigbee2MQTT.</figcaption>
+        </figure>
+        <div>
+          <h3>See it working</h3>
+          <ul>
+            <li>Home Assistant: a Zigbee bulb and motion sensor, plus an Aqara P2 door sensor and an Eve Energy plug over Matter and Thread, all on one box</li>
+            <li>Zigbee2MQTT: the same Hub as a network coordinator with the <code>ember</code> driver</li>
+          </ul>
+          <h3>Full takes on YouTube</h3>
+          <ul>
+            <li><a href="https://youtube.com/shorts/IZHI73ctrgg">Home Assistant: ZHA and Thread/Matter (2:15)</a></li>
+            <li><a href="https://youtube.com/shorts/fEKTZwYghAE">Zigbee2MQTT (0:56)</a></li>
+          </ul>
+        </div>
+      </div>
       <figure class="arch">
         <a href="images/architecture.png"><img src="images/architecture.png" alt="Block diagram: the EFR32MG24 Zigbee radio connects over UART to the ESP32-C5, which contains the CPU, the Thread radio and the Wi-Fi radio. The C5 drives an Ethernet PHY with PoE, which connects over the LAN to Home Assistant." loading="lazy"></a>
         <figcaption>What crosses your network is EZSP over TCP for Zigbee, and plain IPv6 plus the OTBR REST API for Thread. The Thread mesh keeps running if your Home Assistant host reboots. Select the diagram to view it full size.</figcaption>
@@ -276,7 +298,7 @@
             <source src="images/muse-demo.mp4" type="video/mp4">
             <a href="images/muse-demo.mp4">Download the 1-minute demo video (MP4)</a>
           </video>
-          <figcaption id="muse-video-cap">One-minute demo: "turn on the light" switches a Zigbee bulb, then opening a door sensor and walking past a motion sensor each show up in Muse.</figcaption>
+          <figcaption id="muse-video-cap">One-minute demo: "turn on the light" switches a Zigbee bulb, then opening a door sensor and walking past a motion sensor each show up in Muse. <a href="https://youtube.com/shorts/iJT4r0qgQhc">Full 2:38 take on YouTube</a>.</figcaption>
         </figure>
         <div>
           <h3>What Muse can do</h3>
